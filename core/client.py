@@ -116,35 +116,7 @@ class Client(object):
                 logits = getconloss(embedding, embedding_init, embedding_glo, self.temperature)
                 labelsZero = torch.zeros(datas.size(0)).long().to(self.device)
                 lossUnlearn = lossFun(logits, labelsZero.long())
-                loss = self.mu * lossUnlearn              
-
-                # lossUnlearn = - torch.log(torch.exp(F.cosine_similarity(embedding[:unlearningLen], embedding_glo[:unlearningLen]) / self.temperature) / (torch.exp(F.cosine_similarity(embedding[:unlearningLen], embedding_glo[:unlearningLen]) / self.temperature) + torch.exp(F.cosine_similarity(embedding[:unlearningLen], embedding_init[:unlearningLen]) / self.temperature)))
-
-
-                # enhance
-                # lossRecovers = []
-                # for _, (dataRecover, labelR) in enumerate(recoverDataloader):
-                #     dataRecover = dataRecover.to(self.device)
-                #     _, embeddingRecover = self.model(dataRecover)
-                #     _, embeddingPretrain = pertrainedModel_(dataRecover)
-                #     _, embeddingGlobal = globalModel_(dataRecover)
-                #     logitsRecover = getconloss(embeddingRecover, embeddingPretrain, embeddingGlobal)
-                #     labels = torch.zeros(dataRecover.size(0)).long().to(self.device)
-                #     lossRecovers.append(lossFun(logitsRecover, labels.long()))
-                # lossRecover = np.mean(lossRecovers)
-
-                # loss = lossRecover + self.mu * lossUnlearn
-
-                # lossClear = lossFun(predict[unlearningLen:], labels[unlearningLen:])
-                # loss = lossClear + self.mu * torch.mean(lossUnlearn)
-                # NTXLoss
-                # cos=torch.nn.CosineSimilarity(dim=-1)
-                # positive = cos(embedding, embedding_init).reshape(-1,1)
-                # negetive = cos(embedding, embedding_glo).reshape(-1,1)
-                # embeddings = torch.cat((negetive,positive))
-                # indices = torch.arange(0, embedding.size(0), device=self.device)
-                # labels_ = torch.cat((indices, indices))
-                # loss = lossNTX(embeddings, labels_)
+                loss = self.mu * lossUnlearn             
 
                 loss.backward()
                 optimizer.step()
