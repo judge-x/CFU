@@ -33,9 +33,6 @@ if __name__ == '__main__':
     map_location = {f'cuda:{3}': f'cuda:{0}'} if available_device_count >= 3 else 'cpu'
 
     # construct Net
-    if args.dataset == "mnist":
-        model = MLP_MNIST_SUP(embeddingLen=args.embeddingLen)
-        model_name = "MLP"  
     elif args.dataset == "fmnist":
         model = CNN_FMNIST_SUP(embeddingLen=args.embeddingLen)
         model_name = "CNN"
