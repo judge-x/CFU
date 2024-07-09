@@ -1,9 +1,8 @@
 # Heterogeneous Federated Unlearning with Fine-tuned Contrastive Learning
 This is the code for paper 
 
-## Citation
 
-## Backdoor(data-level):
+# Backdoor(sample-level):
 
 # FMNIST:
 pre-train
@@ -17,7 +16,7 @@ python mainBackdoor.py --gpuIndex 2 --dataset fmnist --batchsize 256  --localEpo
 
 
 
-# Client-level
+# Normal(Client-level):
 
 # FMNIST
 pre-train
