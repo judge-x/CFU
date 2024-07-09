@@ -184,47 +184,7 @@ class ServerBackdoor(object):
                     retainLosses.append(retainLoss)
                     retainAccuracys.append(retainAccuracy)
 
-            elif self.args.unlearningMethods == 'active':
-                for g in range(self.args.unlearningEpochs):
-                    print("*************start unlearning {} in Eopchs:{}*************".format(self.args.unlearningMethods, g))
-                    with alive_bar(self.numClient) as bar:
-                        for client in self.clients:
-                            if client.clientIndex in self.poisonList:
-                                loss_, accuracy_ = client.trainActive(getParameter(self.globalModel), self.lr)
-                            else:
-                                loss_, accuracy_ = client.train(getParameter(self.globalModel), self.lr)
-                            bar()
-
-                    self.globalModel.load_state_dict(aggregateFedAvg(self.clients, self.dataloader.totalTrain, True)) 
-
-                    # Test       
-                    backdoorLoss, backdoorAccuracy, retainLoss, retainAccuracy= self.test()
-                    backdoorLosses.append(backdoorLoss)
-                    backdoorAccuracys.append(backdoorAccuracy)
-                    retainLosses.append(retainLoss)
-                    retainAccuracys.append(retainAccuracy)
-
-            elif self.args.unlearningMethods == 'gradAsc':
-                self.clients[0].modelZero = copy.deepcopy(self.globalModel)
-                for g in range(self.args.unlearningEpochs):
-                    print("*************start unlearning {} in Eopchs:{}*************".format(self.args.unlearningMethods, g))
-                    with alive_bar(self.numClient) as bar:
-                        for client in self.clients:
-                            if client.clientIndex in self.poisonList:
-                                loss_, accuracy_ = client.trainAsc(getParameter(self.globalModel), self.lr)
-                            else:
-                                loss_, accuracy_ = client.train(getParameter(self.globalModel), self.lr)
-                            bar()
-
-                    self.globalModel.load_state_dict(aggregateFedAvg(self.clients, self.dataloader.totalTrain, True)) 
-
-                    # Test       
-                    backdoorLoss, backdoorAccuracy, retainLoss, retainAccuracy= self.test()
-                    backdoorLosses.append(backdoorLoss)
-                    backdoorAccuracys.append(backdoorAccuracy)
-                    retainLosses.append(retainLoss)
-                    retainAccuracys.append(retainAccuracy)
-
+         
             # The next to retrain-based methods should carefully setting the accuracy upper bound which related to the time comsuming
             elif self.args.unlearningMethods == 'retrain':
                 self.globalModel = copy.deepcopy(self.teacher)
@@ -255,52 +215,6 @@ class ServerBackdoor(object):
                 # if drawOverlap:
                 #     print("drawing Overlap")
                 #     plotBackTNSE(self.args, self.globalModel, self.clients[0].dataloaderTrain, self.args.unlearningEpochs, self.device)
-
-            elif self.args.unlearningMethods == "can":
-
-                for g in range(self.args.unlearningEpochs):
-                    print("*************start unlearning {} in Eopchs:{}*************".format(self.args.unlearningMethods, g))
-                    with alive_bar(self.numClient) as bar:
-                        for client in self.clients:
-                            if client.clientIndex in self.poisonList:
-                                loss_, accuracy_ = client.trainCan(getParameter(self.globalModel), self.teacher, self.pretrainModel)
-                            else:
-                                loss_, accuracy_ = client.train(getParameter(self.globalModel), self.lr)
-                            bar()
-
-                    self.globalModel.load_state_dict(aggregateFedAvg(self.clients, self.dataloader.totalTrain, True)) 
-
-                    # Test       
-                    backdoorLoss, backdoorAccuracy, retainLoss, retainAccuracy= self.test()
-                    backdoorLosses.append(backdoorLoss)
-                    backdoorAccuracys.append(backdoorAccuracy)
-                    retainLosses.append(retainLoss)
-                    retainAccuracys.append(retainAccuracy)
-                
-            elif self.args.unlearningMethods == 'rapid':
-                self.globalModel = copy.deepcopy(self.teacher)
-                retainAccuracy = 0
-                g = 0
-                # for g in range(self.args.unlearningEpochs):
-                for g in range(self.args.unlearningEpochs): # the stop accuracy need to perset as the trained model/datasets
-                    print("*************start unlearning {} in Eopchs:{}*************".format(self.args.unlearningMethods, g))
-                    with alive_bar(self.numClient) as bar:
-                        for client in self.clients:
-                            if client.clientIndex in self.poisonList:
-                                loss_, accuracy_ = client.trainRip(getParameter(self.globalModel), self.lr)
-                            else:
-                                loss_, accuracy_ = client.train(getParameter(self.globalModel), self.lr)
-                            bar()
-
-                    self.globalModel.load_state_dict(aggregateFedAvg(self.clients, self.dataloader.totalTrain, True)) 
-
-                    # Test       
-                    backdoorLoss, backdoorAccuracy, retainLoss, retainAccuracy= self.test()
-                    backdoorLosses.append(backdoorLoss)
-                    backdoorAccuracys.append(backdoorAccuracy)
-                    retainLosses.append(retainLoss)
-                    retainAccuracys.append(retainAccuracy)
-                    g += 1
 
             timeEnd = time.time()
             unlearningTimeCost = timeEnd - timeStart
