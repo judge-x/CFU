@@ -1,0 +1,48 @@
+---
+
+type: image
+test_batch_size: 1000
+no_models: 10
+epochs: 10100
+retrain_no_times: 2
+
+
+resumed_model:
+environment_name: ppdl_experiment
+log_interval: 10
+
+modify_poison: false
+
+# file names of the images
+poison_type: wall
+
+# poison setting
+poison_name: badnets
+
+poison_label_swap: 2
+size_of_secret_dataset: 200
+
+baseline: false
+random_compromise: true
+noise_level: 0.01
+poison_rate: 0.1
+
+batchsize: 5
+poisoning_per_batch: 1
+poison_test_repeat: 1000
+pattern_diffusion: 2
+poison_pixel: 2
+
+poison_epochs: [10000]
+retrain_poison: 15
+scale_weights: 100
+poison_lr: 0.05
+poison_momentum: 0.9
+poison_decay: 0.005
+poison_step_lr: true
+clamp_value: 1.0
+alpha_loss: 1.0
+number_of_adversaries: 10
+
+s_norm: 1000000
+diff_privacy: false
